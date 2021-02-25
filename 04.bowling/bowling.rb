@@ -9,15 +9,7 @@ score = ARGV[0]
 scores = score.split(',')
 # 得られる結果：["0", "10", "9", "0", "0", "3", "8", "2", "7", "3", "X", "9", "1", "8", "0", "X", "6", "4", "5"]
 
-# shotsへ配列にし代入する。上記の配列の「X」を「10」に変換し代入。「それ以外」を整数へ変換する。
-shots = []
-scores.each do |s|
-  shots << if s == 'X'
-             10
-           else
-             s.to_i
-           end
-end
+shots = scores.map { |s| s == 'X' ? 10 : s.to_i }
 # 得られる結果：[0, 10, 9, 0, 0, 3, 8, 2, 7, 3, 10, 9, 1, 8, 0, 10, 6, 4, 5]
 
 # 初期値を設定
@@ -31,14 +23,14 @@ shots.each_with_index do |s, idx|
   frame_score += s # 都度、スコア「s」をプラスしていく
 
   # 10フレームの計算
-  if frame_count == 10 && shot_count == 1 && s == 10
-    total_score += frame_score + shots[idx + 1] + shots[idx + 2] # 10フレーム目の1投目がストライクの場合、次と次々の分もプラス
-    break # 脱出してこれ以降のコードを無視
-  elsif frame_count == 10 && frame_score == 10
-    total_score += frame_score + shots[idx + 1] # 10フレーム目でスペアが出た場合、次の分もプラス
+  if frame_count == 10
+    if shot_count == 1 && s == 10
+      total_score += frame_score + shots[idx + 1] + shots[idx + 2]
+    elsif frame_count == 10 && frame_score == 10
+      total_score += frame_score + shots[idx + 1] # 10フレーム目でスペアが出た場合、次の分もプラス
+    end
     break # 脱出してこれ以降のコードを無視
   end
-
   # 1〜9フレームの計算
   if shot_count == 1 && s == 10 # ストライクの時
     total_score += shots[idx + 1] + shots[idx + 2] # ボーナスポイントを加算、次と次々の投球スコアを加算
