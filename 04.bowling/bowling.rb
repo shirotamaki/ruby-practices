@@ -26,7 +26,7 @@ shots.each_with_index do |s, idx|
   if frame_count == 10
     if shot_count == 1 && s == 10
       total_score += frame_score + shots[idx + 1] + shots[idx + 2]
-    elsif frame_count == 10 && frame_score == 10
+    elsif frame_score == 10
       total_score += frame_score + shots[idx + 1] # 10フレーム目でスペアが出た場合、次の分もプラス
     end
     break # 脱出してこれ以降のコードを無視
