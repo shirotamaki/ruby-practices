@@ -6,26 +6,20 @@ require 'etc'
 
 def main
   options = ARGV.getopts('a', 'l', 'r')
-  if options['a'] && options['l'] && options['r']
-    files_arl = Dir.glob('*', File::FNM_DOTMATCH).sort.reverse
-    option_arl(files_arl)
-  elsif options['a']
-    files = Dir.glob('*', File::FNM_DOTMATCH).sort
-    option_a_r(files)
-  elsif options['r']
-    files = Dir.glob('*').sort.reverse
-    option_a_r(files)
+  files = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH).sort : Dir.glob('*').sort
+  files = files.reverse if options['r']
+
+  if options['a'] && options['r'] && options['l']
+    options_l(files)
   elsif options['l']
-    files = Dir.glob('*').sort
-    option_l(files)
+    options_l(files)
   else
-    files = Dir.glob('*').sort
-    option_a_r(files)
+    options_a_r(files)
   end
 end
 
 # オプションなし、aオプション、rオプション
-def option_a_r(files)
+def options_a_r(files)
   size = files.each_slice(3).to_a.size
   splitted_files = files.each_slice(size).to_a
   filled_files = splitted_files.map { |row| row.values_at(0..(size - 1)) }
@@ -38,8 +32,15 @@ def option_a_r(files)
   end
 end
 
-# lオプション
-def option_l(files)
+# lオプション、arlオプション
+def options_l(files)
+  total = 0
+  files.each do |x|
+    fs = File::Stat.new(x)
+    total += fs.blocks
+  end
+  puts "total #{total / 2}"
+
   files.each do |x|
     fs = File::Stat.new(x)
     ftype = fs.ftype
@@ -51,25 +52,6 @@ def option_l(files)
     nlink = fs.nlink
     uid = Etc.getpwuid(fs.uid).name
     # gid = Etc.getgrgid(fs.gid).name  　# 本家lsコマンドでは表示されないため除外。
-    size = fs.size
-    mtime = fs.mtime.strftime('%b %d %H:%M')
-    basename = File.basename(x)
-    print "#{ftype_output}#{mode_output1}#{mode_output2}#{mode_output3} #{nlink} #{uid} #{size} #{mtime} #{basename}\n"
-  end
-end
-
-def option_arl(files_arl)
-  files_arl.each do |x|
-    fs = File::Stat.new(x)
-    ftype = fs.ftype
-    mode = format('%o', fs.mode)
-    ftype_output = option_ftype(ftype)
-    mode_output1 = option_mode(mode[-3])
-    mode_output2 = option_mode(mode[-2])
-    mode_output3 = option_mode(mode[-1])
-    nlink = fs.nlink
-    uid = Etc.getpwuid(fs.uid).name
-    # gid = Etc.getgrgid(fs.gid).name     # 本家lsコマンドでは表示されないため除外。
     size = fs.size
     mtime = fs.mtime.strftime('%b %d %H:%M')
     basename = File.basename(x)
