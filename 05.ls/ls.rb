@@ -26,11 +26,20 @@ def output_command(files)
 end
 
 # lオプション、arlオプションの場合
-def output_command_l(files)
+# total部分の出力用メソッドを作成
+def blocks_total(files)
   total = 0
   files.each do |x|
     fs = File::Stat.new(x)
     total += fs.blocks
+  end
+  puts "total #{total / 2}"
+end
+
+# total部分以外の出力用メソッドを作成
+def output_detail(files)
+  files.each do |x|
+    fs = File::Stat.new(x)
     ftype = fs.ftype
     mode = format('%o', fs.mode)
     ftype_output = option_ftype(ftype)
@@ -45,7 +54,12 @@ def output_command_l(files)
     basename = File.basename(x)
     print "#{ftype_output}#{mode_output1}#{mode_output2}#{mode_output3} #{nlink} #{uid} #{size} #{mtime} #{basename}\n"
   end
-  puts "total #{total / 2}"
+end
+
+# 呼び出す
+def output_command_l(files)
+  blocks_total(files)
+  output_detail(files)
 end
 
 # lオプション（ftype用のメソッド）
