@@ -8,18 +8,11 @@ def main
   options = ARGV.getopts('a', 'l', 'r')
   files = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH).sort : Dir.glob('*').sort
   files = files.reverse if options['r']
-
-  if options['a'] && options['r'] && options['l']
-    options_l(files)
-  elsif options['l']
-    options_l(files)
-  else
-    options_a_r(files)
-  end
+  options['l'] ? output_command_l(files) : output_command(files)
 end
 
-# オプションなし、aオプション、rオプション
-def options_a_r(files)
+# オプションなし、aオプション、rオプションの場合
+def output_command(files)
   size = files.each_slice(3).to_a.size
   splitted_files = files.each_slice(size).to_a
   filled_files = splitted_files.map { |row| row.values_at(0..(size - 1)) }
@@ -32,17 +25,12 @@ def options_a_r(files)
   end
 end
 
-# lオプション、arlオプション
-def options_l(files)
+# lオプション、arlオプションの場合
+def output_command_l(files)
   total = 0
   files.each do |x|
     fs = File::Stat.new(x)
     total += fs.blocks
-  end
-  puts "total #{total / 2}"
-
-  files.each do |x|
-    fs = File::Stat.new(x)
     ftype = fs.ftype
     mode = format('%o', fs.mode)
     ftype_output = option_ftype(ftype)
@@ -57,6 +45,7 @@ def options_l(files)
     basename = File.basename(x)
     print "#{ftype_output}#{mode_output1}#{mode_output2}#{mode_output3} #{nlink} #{uid} #{size} #{mtime} #{basename}\n"
   end
+  puts "total #{total / 2}"
 end
 
 # lオプション（ftype用のメソッド）
