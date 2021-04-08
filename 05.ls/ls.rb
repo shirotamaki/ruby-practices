@@ -11,7 +11,6 @@ def main
   options['l'] ? output_command_l(files) : output_command(files)
 end
 
-# オプションなし、aオプション、rオプションの場合
 def output_command(files)
   size = files.each_slice(3).to_a.size
   splitted_files = files.each_slice(size).to_a
@@ -25,13 +24,11 @@ def output_command(files)
   end
 end
 
-# lオプションの時totalの出力をする
 def output_total(files)
   total = files.sum { |x| File::Stat.new(x).blocks }
   puts "total #{total / 2}"
 end
 
-# total部分以外の出力用メソッド
 def output_detail(files)
   files.each do |x|
     fs = File::Stat.new(x)
