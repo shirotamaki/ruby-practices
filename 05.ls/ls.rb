@@ -25,40 +25,33 @@ def output_command(files)
   end
 end
 
-# lオプション、arlオプションの場合
-# total部分の出力用メソッドを作成
-def blocks_total(files)
-  total = 0
-  files.each do |x|
-    fs = File::Stat.new(x)
-    total += fs.blocks
-  end
+# lオプションの時totalの出力をする
+def output_total(files)
+  total = files.sum { |x| File::Stat.new(x).blocks }
   puts "total #{total / 2}"
 end
 
-# total部分以外の出力用メソッドを作成
+# total部分以外の出力用メソッド
 def output_detail(files)
   files.each do |x|
     fs = File::Stat.new(x)
     ftype = fs.ftype
     mode = format('%o', fs.mode)
-    ftype_output = option_ftype(ftype)
-    mode_output1 = option_mode(mode[-3])
-    mode_output2 = option_mode(mode[-2])
-    mode_output3 = option_mode(mode[-1])
+    ftype = option_ftype(ftype)
+    owner_permission = option_mode(mode[-3])
+    group_permission = option_mode(mode[-2])
+    other_user_permission = option_mode(mode[-1])
     nlink = fs.nlink
     uid = Etc.getpwuid(fs.uid).name
-    # gid = Etc.getgrgid(fs.gid).name  　# 本家lsコマンドでは表示されないため除外。
     size = fs.size
     mtime = fs.mtime.strftime('%b %d %H:%M')
     basename = File.basename(x)
-    print "#{ftype_output}#{mode_output1}#{mode_output2}#{mode_output3} #{nlink} #{uid} #{size} #{mtime} #{basename}\n"
+    print "#{ftype}#{owner_permission}#{group_permission}#{other_user_permission}\s#{nlink}\s#{uid}\s#{size}\s#{mtime}\s#{basename}\n"
   end
 end
 
-# 呼び出す
 def output_command_l(files)
-  blocks_total(files)
+  output_total(files)
   output_detail(files)
 end
 
