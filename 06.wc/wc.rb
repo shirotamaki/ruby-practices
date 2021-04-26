@@ -2,23 +2,26 @@
 # frozen_string_literal: true
 
 require 'optparse'
+DISPLAY_LAYOUT = 8
 
-def main
-  files = ARGV
-  options = ARGV.getopts('l')
-  if options['l']
-    operation_l_option(files)
+def main(files, option)
+  if files.empty? && option['l']
+    input = $stdin.read
+    output_stdin_l_option(input)
+  elsif files.empty?
+    input = $stdin.read
+    output_stdin(input)
   else
-    operation(files)
+    calculate_option(files, option)
   end
 end
 
-def operation(files)
-  if files.empty?
-    input = $stdin.read
-    output_stdin(input)
-  end
-  files.map do |file|
+def calculate_option(files, option)
+  option['l'] ? operate_l_option(files) : operate(files)
+end
+
+def operate(files)
+  files.each do |file|
     if FileTest.directory?(file)
       output_dir_error(file)
     elsif FileTest.file?(file)
@@ -27,121 +30,122 @@ def operation(files)
       output_error(file)
     end
   end
-  total_files(files)
+  create_total_file(files)
 end
 
-def operation_l_option(files)
-  if files.empty?
-    input = $stdin.read
-    output_stdin_l_option(input)
-  end
-  files.map do |file|
+def operate_l_option(files)
+  files.each do |file|
     if FileTest.directory?(file)
-      output_dir_error_l(file)
+      output_dir_error_l_option(file)
     elsif FileTest.file?(file)
       output_single_file_l_option(file)
     else
-      output_error(files)
+      output_error(file)
     end
   end
-  total_files_l_option(files)
+  create_total_files_l_option(files)
 end
 
-# 部品 (行数、単語数、バイト数を数える)
-def count_line(file)
-  result = File.read(file).count("\n")
-  result.to_i
+def count_line(text)
+  text.count("\n")
 end
 
-def count_word(file)
-  result = File.read(file).split(/\s+/).size
-  result.to_i
+def count_word(text)
+  text.split(/\s+/).size
 end
 
-def count_bytesize(file)
-  result = File.read(file).bytesize
-  result.to_i
+def count_bytesize(text)
+  text.bytesize
 end
 
-# 部品（トータルの行数、単語数、バイト数を数える）
-def count_total_lines(files)
-  files.sum { |file| count_line(file) }
+def count_total_line(total_files)
+  total_files.sum do |file|
+    text = File.read(file)
+    count_line(text)
+  end
 end
 
-def count_total_words(files)
-  files.sum { |file| count_word(file) }
+def count_total_word(total_files)
+  total_files.sum do |file|
+    text = File.read(file)
+    count_word(text)
+  end
 end
 
-def count_total_bytesizes(files)
-  files.sum { |file| count_bytesize(file) }
+def count_total_bytesize(total_files)
+  total_files.sum do |file|
+    text = File.read(file)
+    count_bytesize(text)
+  end
 end
 
-# 部品（トータル数算出用のファイルを生成）
-def total_files(files)
+def create_total_file(files)
   total_files = []
   files.each do |file|
     total_files << file if FileTest.file?(file)
   end
-  output_plural_files(total_files) if files.count > 1
+  output_total_files(total_files) if files.count > 1
 end
 
-def total_files_l_option(files)
+def create_total_files_l_option(files)
   total_files = []
   files.each do |file|
     total_files << file if FileTest.file?(file)
   end
-  output_plural_files_l_option(total_files) if files.count > 1
+  output_total_files_l_option(total_files) if files.count > 1
 end
 
-# 部品（エラーメッセージ用）
 def output_dir_error(file)
   puts "wc: #{file}: Is a directory"
-  puts "0\s\s0\s\s0\s\s#{file}"
+  puts "\s\s\s\s\s\s0\s\s\s\s\s\s\s0\s\s\s\s\s\s\s0\s#{file}"
 end
 
-def output_dir_error_l(file)
+def output_dir_error_l_option(file)
   puts "wc: #{file}: Is a directory"
   puts "0\s#{file}"
 end
 
 def output_error(file)
-  print "wc: #{file}: No such file or directory\n"
+  puts "wc: #{file}: No such file or directory"
 end
 
-# 部品（アウトプット用）
 def output_single_file(file)
-  print count_line(file).to_s.ljust(8)
-  print count_word(file).to_s.ljust(8)
-  print count_bytesize(file).to_s.ljust(8)
-  print "#{file}\n".to_s
+  text = File.read(file)
+  print count_line(text).to_s.rjust(DISPLAY_LAYOUT)
+  print count_word(text).to_s.rjust(DISPLAY_LAYOUT)
+  print count_bytesize(text).to_s.rjust(DISPLAY_LAYOUT)
+  puts "\s#{file}"
 end
 
-def output_plural_files(total_files)
-  print count_total_lines(total_files).to_s.ljust(8)
-  print count_total_words(total_files).to_s.ljust(8)
-  print count_total_bytesizes(total_files).to_s.ljust(8)
-  print "total\n".to_s
+def output_total_files(total_files)
+  print count_total_line(total_files).to_s.rjust(DISPLAY_LAYOUT)
+  print count_total_word(total_files).to_s.rjust(DISPLAY_LAYOUT)
+  print count_total_bytesize(total_files).to_s.rjust(DISPLAY_LAYOUT)
+  puts "\stotal"
 end
 
 def output_single_file_l_option(file)
-  print count_line(file).to_s.ljust(8)
-  print "#{file}\n".to_s
+  text = File.read(file)
+  print count_line(text).to_s.rjust(DISPLAY_LAYOUT)
+  puts "\s#{file}"
 end
 
-def output_plural_files_l_option(files)
-  print count_total_lines(files).to_s.ljust(8)
-  print "total\n".to_s
+def output_total_files_l_option(total_files)
+  print count_total_line(total_files).to_s.rjust(DISPLAY_LAYOUT)
+  puts "\stotal"
 end
 
 def output_stdin(input)
-  print input.count("\n").to_s.ljust(8)
-  print input.split(/\s+/).size.to_s.ljust(8)
-  print input.bytesize.to_s.ljust(8) + "\n"
+  print count_line(input).to_s.rjust(DISPLAY_LAYOUT)
+  print count_word(input).to_s.rjust(DISPLAY_LAYOUT)
+  puts count_bytesize(input).to_s.rjust(DISPLAY_LAYOUT)
 end
 
 def output_stdin_l_option(input)
-  print input.count("\n").to_s
-  print "D\n".to_s
+  print count_line(input)
+  puts 'D'
 end
 
-main
+files = ARGV
+option = ARGV.getopts('l')
+main(files, option)
