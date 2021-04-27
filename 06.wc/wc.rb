@@ -12,12 +12,8 @@ def main(files, option)
     input = $stdin.read
     output_stdin(input)
   else
-    calculate_option(files, option)
+    option['l'] ? operate_l_option(files) : operate(files)
   end
-end
-
-def calculate_option(files, option)
-  option['l'] ? operate_l_option(files) : operate(files)
 end
 
 def operate(files)
