@@ -22,26 +22,16 @@ end
 
 def operate(files)
   files.each do |file|
-    if FileTest.directory?(file)
-      output_dir_error(file)
-    elsif FileTest.file?(file)
-      output_single_file(file)
-    else
-      output_error(file)
-    end
+    FileTest.file?(file)
+    output_single_file(file)
   end
   create_total_file(files)
 end
 
 def operate_l_option(files)
   files.each do |file|
-    if FileTest.directory?(file)
-      output_dir_error_l_option(file)
-    elsif FileTest.file?(file)
-      output_single_file_l_option(file)
-    else
-      output_error(file)
-    end
+    FileTest.file?(file)
+    output_single_file_l_option(file)
   end
   create_total_files_l_option(files)
 end
@@ -93,20 +83,6 @@ def create_total_files_l_option(files)
     total_files << file if FileTest.file?(file)
   end
   output_total_files_l_option(total_files) if files.count > 1
-end
-
-def output_dir_error(file)
-  puts "wc: #{file}: Is a directory"
-  puts "\s\s\s\s\s\s0\s\s\s\s\s\s\s0\s\s\s\s\s\s\s0\s#{file}"
-end
-
-def output_dir_error_l_option(file)
-  puts "wc: #{file}: Is a directory"
-  puts "0\s#{file}"
-end
-
-def output_error(file)
-  puts "wc: #{file}: No such file or directory"
 end
 
 def output_single_file(file)
