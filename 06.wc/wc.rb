@@ -5,31 +5,20 @@ require 'optparse'
 COLUMN_WIDTH = 8
 
 def main(files, option)
-  if files.empty? && option['l']
+  if files.empty?
     input = $stdin.read
-    output_stdin_l_option(input)
-  elsif files.empty?
-    input = $stdin.read
-    output_stdin(input)
+    output_stdin(input, option['l'])
   else
-    option['l'] ? operate_l_option(files) : operate(files)
+    operate(files, option['l'])
   end
 end
 
-def operate(files)
+def operate(files, l_option)
   files.each do |file|
     FileTest.file?(file)
-    output_single_file(file)
+    output_single_file(file, l_option)
   end
-  create_total_file(files)
-end
-
-def operate_l_option(files)
-  files.each do |file|
-    FileTest.file?(file)
-    output_single_file_l_option(file)
-  end
-  create_total_files_l_option(files)
+  output_total_files(files, l_option) if files.count > 1
 end
 
 def count_line(text)
@@ -44,78 +33,52 @@ def count_bytesize(text)
   text.bytesize
 end
 
-def count_total_line(total_files)
-  total_files.sum do |file|
+def count_total_line(files)
+  files.sum do |file|
     text = File.read(file)
     count_line(text)
   end
 end
 
-def count_total_word(total_files)
-  total_files.sum do |file|
+def count_total_word(files)
+  files.sum do |file|
     text = File.read(file)
     count_word(text)
   end
 end
 
-def count_total_bytesize(total_files)
-  total_files.sum do |file|
+def count_total_bytesize(files)
+  files.sum do |file|
     text = File.read(file)
     count_bytesize(text)
   end
 end
 
-def create_total_file(files)
-  total_files = []
-  files.each do |file|
-    total_files << file if FileTest.file?(file)
-  end
-  output_total_files(total_files) if files.count > 1
-end
-
-def create_total_files_l_option(files)
-  total_files = []
-  files.each do |file|
-    total_files << file if FileTest.file?(file)
-  end
-  output_total_files_l_option(total_files) if files.count > 1
-end
-
-def output_single_file(file)
+def output_single_file(file, l_option)
   text = File.read(file)
   print count_line(text).to_s.rjust(COLUMN_WIDTH)
-  print count_word(text).to_s.rjust(COLUMN_WIDTH)
-  print count_bytesize(text).to_s.rjust(COLUMN_WIDTH)
+  unless l_option
+    print count_word(text).to_s.rjust(COLUMN_WIDTH)
+    print count_bytesize(text).to_s.rjust(COLUMN_WIDTH)
+  end
   puts "\s#{file}"
 end
 
-def output_total_files(total_files)
-  print count_total_line(total_files).to_s.rjust(COLUMN_WIDTH)
-  print count_total_word(total_files).to_s.rjust(COLUMN_WIDTH)
-  print count_total_bytesize(total_files).to_s.rjust(COLUMN_WIDTH)
+def output_total_files(files, l_option)
+  print count_total_line(files).to_s.rjust(COLUMN_WIDTH)
+  unless l_option
+    print count_total_word(files).to_s.rjust(COLUMN_WIDTH)
+    print count_total_bytesize(files).to_s.rjust(COLUMN_WIDTH)
+  end
   puts "\stotal"
 end
 
-def output_single_file_l_option(file)
-  text = File.read(file)
-  print count_line(text).to_s.rjust(COLUMN_WIDTH)
-  puts "\s#{file}"
-end
-
-def output_total_files_l_option(total_files)
-  print count_total_line(total_files).to_s.rjust(COLUMN_WIDTH)
-  puts "\stotal"
-end
-
-def output_stdin(input)
+def output_stdin(input, l_option)
   print count_line(input).to_s.rjust(COLUMN_WIDTH)
-  print count_word(input).to_s.rjust(COLUMN_WIDTH)
-  puts count_bytesize(input).to_s.rjust(COLUMN_WIDTH)
-end
-
-def output_stdin_l_option(input)
-  print count_line(input)
-  puts 'D'
+  unless l_option
+    print count_word(input).to_s.rjust(COLUMN_WIDTH)
+    puts count_bytesize(input).to_s.rjust(COLUMN_WIDTH)
+  end
 end
 
 files = ARGV
