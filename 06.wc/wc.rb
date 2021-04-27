@@ -70,15 +70,15 @@ def output_total_files(files, l_option)
     print count_total_word(files).to_s.rjust(COLUMN_WIDTH)
     print count_total_bytesize(files).to_s.rjust(COLUMN_WIDTH)
   end
-  puts " total"
+  puts ' total'
 end
 
 def output_stdin(input, l_option)
   print count_line(input).to_s.rjust(COLUMN_WIDTH)
-  unless l_option
-    print count_word(input).to_s.rjust(COLUMN_WIDTH)
-    puts count_bytesize(input).to_s.rjust(COLUMN_WIDTH)
-  end
+  return if l_option
+
+  print count_word(input).to_s.rjust(COLUMN_WIDTH)
+  puts count_bytesize(input).to_s.rjust(COLUMN_WIDTH)
 end
 
 files = ARGV
