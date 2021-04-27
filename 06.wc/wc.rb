@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
-DISPLAY_LAYOUT = 8
+COLUMN_WIDTH = 8
 
 def main(files, option)
   if files.empty? && option['l']
@@ -111,34 +111,34 @@ end
 
 def output_single_file(file)
   text = File.read(file)
-  print count_line(text).to_s.rjust(DISPLAY_LAYOUT)
-  print count_word(text).to_s.rjust(DISPLAY_LAYOUT)
-  print count_bytesize(text).to_s.rjust(DISPLAY_LAYOUT)
+  print count_line(text).to_s.rjust(COLUMN_WIDTH)
+  print count_word(text).to_s.rjust(COLUMN_WIDTH)
+  print count_bytesize(text).to_s.rjust(COLUMN_WIDTH)
   puts "\s#{file}"
 end
 
 def output_total_files(total_files)
-  print count_total_line(total_files).to_s.rjust(DISPLAY_LAYOUT)
-  print count_total_word(total_files).to_s.rjust(DISPLAY_LAYOUT)
-  print count_total_bytesize(total_files).to_s.rjust(DISPLAY_LAYOUT)
+  print count_total_line(total_files).to_s.rjust(COLUMN_WIDTH)
+  print count_total_word(total_files).to_s.rjust(COLUMN_WIDTH)
+  print count_total_bytesize(total_files).to_s.rjust(COLUMN_WIDTH)
   puts "\stotal"
 end
 
 def output_single_file_l_option(file)
   text = File.read(file)
-  print count_line(text).to_s.rjust(DISPLAY_LAYOUT)
+  print count_line(text).to_s.rjust(COLUMN_WIDTH)
   puts "\s#{file}"
 end
 
 def output_total_files_l_option(total_files)
-  print count_total_line(total_files).to_s.rjust(DISPLAY_LAYOUT)
+  print count_total_line(total_files).to_s.rjust(COLUMN_WIDTH)
   puts "\stotal"
 end
 
 def output_stdin(input)
-  print count_line(input).to_s.rjust(DISPLAY_LAYOUT)
-  print count_word(input).to_s.rjust(DISPLAY_LAYOUT)
-  puts count_bytesize(input).to_s.rjust(DISPLAY_LAYOUT)
+  print count_line(input).to_s.rjust(COLUMN_WIDTH)
+  print count_word(input).to_s.rjust(COLUMN_WIDTH)
+  puts count_bytesize(input).to_s.rjust(COLUMN_WIDTH)
 end
 
 def output_stdin_l_option(input)
