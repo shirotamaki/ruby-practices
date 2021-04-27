@@ -61,7 +61,7 @@ def output_single_file(file, l_option)
     print count_word(text).to_s.rjust(COLUMN_WIDTH)
     print count_bytesize(text).to_s.rjust(COLUMN_WIDTH)
   end
-  puts "\s#{file}"
+  puts " #{file}"
 end
 
 def output_total_files(files, l_option)
@@ -70,7 +70,7 @@ def output_total_files(files, l_option)
     print count_total_word(files).to_s.rjust(COLUMN_WIDTH)
     print count_total_bytesize(files).to_s.rjust(COLUMN_WIDTH)
   end
-  puts "\stotal"
+  puts " total"
 end
 
 def output_stdin(input, l_option)
