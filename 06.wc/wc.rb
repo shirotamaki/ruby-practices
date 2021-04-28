@@ -33,27 +33,6 @@ def count_bytesize(text)
   text.bytesize
 end
 
-def count_total_line(files)
-  files.sum do |file|
-    text = File.read(file)
-    count_line(text)
-  end
-end
-
-def count_total_word(files)
-  files.sum do |file|
-    text = File.read(file)
-    count_word(text)
-  end
-end
-
-def count_total_bytesize(files)
-  files.sum do |file|
-    text = File.read(file)
-    count_bytesize(text)
-  end
-end
-
 def output_single_file(file, l_option)
   text = File.read(file)
   output_counts(text, l_option)
@@ -61,10 +40,19 @@ def output_single_file(file, l_option)
 end
 
 def output_total_files(files, l_option)
-  print format_count(count_total_line(files))
+  line_count_sum = 0
+  line_word_sum = 0
+  line_bytesize_sum = 0
+  files.each do |file|
+    text = File.read(file)
+    line_count_sum += count_line(text)
+    line_word_sum += count_word(text)
+    line_bytesize_sum += count_bytesize(text)
+  end
+  print format_count(line_count_sum)
   unless l_option
-    print format_count(count_total_word(files))
-    print format_count(count_total_bytesize(files))
+    print format_count(line_word_sum)
+    print format_count(line_bytesize_sum)
   end
   puts ' total'
 end
@@ -74,7 +62,7 @@ def output_counts(text, l_option)
   return if l_option
 
   print format_count(count_word(text))
-  puts format_count(count_bytesize(text))
+  print format_count(count_bytesize(text))
 end
 
 def format_count(count)
