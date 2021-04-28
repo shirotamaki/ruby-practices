@@ -7,14 +7,14 @@ COLUMN_WIDTH = 8
 
 def main(files, option)
   if files.empty?
-    input = $stdin.read
-    output_stdin(input, option['l'])
+    text = $stdin.read
+    output_counts(text, option['l'])
   else
-    operate(files, option['l'])
+    output_file_contents(files, option['l'])
   end
 end
 
-def operate(files, l_option)
+def output_file_contents(files, l_option)
   files.each do |file|
     output_single_file(file, l_option)
   end
@@ -73,12 +73,12 @@ def output_total_files(files, l_option)
   puts ' total'
 end
 
-def output_stdin(input, l_option)
-  print count_line(input).to_s.rjust(COLUMN_WIDTH)
+def output_counts(text, l_option)
+  print count_line(text).to_s.rjust(COLUMN_WIDTH)
   return if l_option
 
-  print count_word(input).to_s.rjust(COLUMN_WIDTH)
-  puts count_bytesize(input).to_s.rjust(COLUMN_WIDTH)
+  print count_word(text).to_s.rjust(COLUMN_WIDTH)
+  puts count_bytesize(text).to_s.rjust(COLUMN_WIDTH)
 end
 
 files = ARGV
