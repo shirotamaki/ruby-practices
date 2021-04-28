@@ -14,11 +14,8 @@ def main(files, option)
   end
 end
 
-def output_file_contents(files, l_option)
-  files.each do |file|
-    output_single_file(file, l_option)
-  end
-  output_total_files(files, l_option) if files.count > 1
+def format_count(count)
+  count.to_s.rjust(COLUMN_WIDTH)
 end
 
 def count_line(text)
@@ -31,6 +28,22 @@ end
 
 def count_bytesize(text)
   text.bytesize
+end
+
+def output_counts(text, l_option)
+  print format_count(count_line(text))
+  unless l_option
+    print format_count(count_word(text))
+    print format_count(count_bytesize(text))
+  end
+  puts
+end
+
+def output_file_contents(files, l_option)
+  files.each do |file|
+    output_single_file(file, l_option)
+  end
+  output_total_files(files, l_option) if files.count > 1
 end
 
 def output_single_file(file, l_option)
@@ -55,19 +68,6 @@ def output_total_files(files, l_option)
     print format_count(line_bytesize_sum)
   end
   puts ' total'
-end
-
-def output_counts(text, l_option)
-  print format_count(count_line(text))
-  unless l_option
-  print format_count(count_word(text))
-  print format_count(count_bytesize(text))
-end
-  puts
-end
-
-def format_count(count)
-  count.to_s.rjust(COLUMN_WIDTH)
 end
 
 files = ARGV
