@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
+
 COLUMN_WIDTH = 8
 
 def main(files, option)
@@ -15,7 +16,6 @@ end
 
 def operate(files, l_option)
   files.each do |file|
-    FileTest.file?(file)
     output_single_file(file, l_option)
   end
   output_total_files(files, l_option) if files.count > 1
