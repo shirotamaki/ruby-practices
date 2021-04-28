@@ -61,20 +61,24 @@ def output_single_file(file, l_option)
 end
 
 def output_total_files(files, l_option)
-  print count_total_line(files).to_s.rjust(COLUMN_WIDTH)
+  print format_count(count_total_line(files))
   unless l_option
-    print count_total_word(files).to_s.rjust(COLUMN_WIDTH)
-    print count_total_bytesize(files).to_s.rjust(COLUMN_WIDTH)
+    print format_count(count_total_word(files))
+    print format_count(count_total_bytesize(files))
   end
   puts ' total'
 end
 
 def output_counts(text, l_option)
-  print count_line(text).to_s.rjust(COLUMN_WIDTH)
+  print format_count(count_line(text))
   return if l_option
 
-  print count_word(text).to_s.rjust(COLUMN_WIDTH)
-  puts count_bytesize(text).to_s.rjust(COLUMN_WIDTH)
+  print format_count(count_word(text))
+  puts format_count(count_bytesize(text))
+end
+
+def format_count(count)
+  count.to_s.rjust(COLUMN_WIDTH)
 end
 
 files = ARGV
