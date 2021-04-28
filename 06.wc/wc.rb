@@ -59,10 +59,11 @@ end
 
 def output_counts(text, l_option)
   print format_count(count_line(text))
-  return if l_option
-
+  unless l_option
   print format_count(count_word(text))
   print format_count(count_bytesize(text))
+end
+  puts
 end
 
 def format_count(count)
