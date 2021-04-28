@@ -56,11 +56,7 @@ end
 
 def output_single_file(file, l_option)
   text = File.read(file)
-  print count_line(text).to_s.rjust(COLUMN_WIDTH)
-  unless l_option
-    print count_word(text).to_s.rjust(COLUMN_WIDTH)
-    print count_bytesize(text).to_s.rjust(COLUMN_WIDTH)
-  end
+  output_counts(text, l_option)
   puts " #{file}"
 end
 
