@@ -8,9 +8,9 @@ COLUMN_WIDTH = 8
 def main(files, option)
   if files.empty?
     text = $stdin.read
-    output_counts(text, option['l'])
+    output_counts_for_text(text, option['l'])
   else
-    output_file_contents(files, option['l'])
+    output_counts_for_files(files, option['l'])
   end
 end
 
@@ -30,7 +30,7 @@ def count_bytesize(text)
   text.bytesize
 end
 
-def output_counts(text, l_option)
+def output_counts_for_text(text, l_option)
   print format_count(count_line(text))
   unless l_option
     print format_count(count_word(text))
@@ -39,20 +39,20 @@ def output_counts(text, l_option)
   puts
 end
 
-def output_file_contents(files, l_option)
+def output_counts_for_files(files, l_option)
   files.each do |file|
     output_single_file(file, l_option)
   end
-  output_total_files(files, l_option) if files.count > 1
+  output_counts_for_file(files, l_option) if files.count > 1
 end
 
 def output_single_file(file, l_option)
   text = File.read(file)
-  output_counts(text, l_option)
+  output_counts_for_text(text, l_option)
   puts " #{file}"
 end
 
-def output_total_files(files, l_option)
+def output_counts_for_file(files, l_option)
   line_count_sum = 0
   line_word_sum = 0
   line_bytesize_sum = 0
